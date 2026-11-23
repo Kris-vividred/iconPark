@@ -28,7 +28,7 @@
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;font-weight:500;line-height:1.5}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
-.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1232px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--fg);outline-offset:2px;border-radius:6px}
 a{color:inherit}
@@ -36,8 +36,8 @@ a{color:inherit}
 /* header */
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
 .bar{display:flex;align-items:center;gap:16px;height:64px}
-.logo{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:-.02em;font-size:18px;text-decoration:none;white-space:nowrap}
-.logo svg{width:26px;height:26px}
+.logo{display:flex;align-items:center;gap:6px;font-weight:800;letter-spacing:-.02em;font-size:20px;text-decoration:none;white-space:nowrap}
+.logo svg{width:22px;height:25px}
 .search{position:relative;flex:1;min-width:0}
 .search svg{position:absolute;left:12px;top:50%;width:20px;height:20px;transform:translateY(-50%);pointer-events:none}
 .search input{width:100%;height:44px;border:1px solid var(--line);border-radius:var(--radius-pill);background:var(--tile);color:var(--fg);font:inherit;font-size:16px;padding:0 16px 0 42px}
@@ -52,7 +52,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:va
 .navbtn .count{font-size:12px;background:var(--fg);color:var(--bg);border-radius:var(--radius-pill);padding:0 7px;line-height:18px}
 
 /* hero */
-.hero{text-align:center;padding-block:44px 28px}
+.hero{text-align:center;padding-block:44px 28px;min-height:93px}
 .hero h1{font-size:clamp(24px,4.2vw,36px);font-weight:800;letter-spacing:-.025em;line-height:1.15;margin:0;text-wrap:balance}
 .hero h1 button{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px;font-weight:800}
 .hero p{margin:10px 0 0;font-size:18px;font-weight:700}
@@ -120,21 +120,21 @@ dialog::backdrop{background:var(--overlay)}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 label.lbl{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
 select,input[type=color]{font:inherit;font-size:14px;height:34px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);padding:0 8px}
-input[type=color]{width:44px;padding:2px}
+input[type=color]{width:40px;height:28px;border-radius:6px;padding:2px}
 .btn{height:44px;padding:0 18px;border-radius:var(--radius-pill);font-weight:700;display:inline-flex;align-items:center;gap:8px}
 .btn.primary{background:var(--accent);color:var(--on-accent)}
 .btn.ghost{border:1px solid var(--line)}
 .btn.ghost:hover{background:var(--tile)}
 .btn svg{width:18px;height:18px}
 .btn.fav[aria-pressed="true"]{color:var(--fav);border-color:var(--fav)}
-pre.code{margin:0;background:var(--tile);border-radius:8px;padding:12px;font:400 12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;max-height:130px;overflow:auto}
+pre.code{margin:0;background:var(--tile);border-radius:var(--radius-md);padding:12px;font:400 12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;max-height:130px;overflow:auto}
 .license{font-size:13px;color:var(--muted);margin:0}
 .license button{text-decoration:underline}
 .close{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:var(--radius-pill);display:grid;place-items:center;z-index:2;background:var(--bg)}
 .close svg{width:20px;height:20px}
 /* toast is a manual popover so it joins the top layer above an open modal <dialog> and its backdrop */
 .toast{position:fixed;inset:auto;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));margin:0;border:0;overflow:visible;width:max-content;max-width:calc(100vw - 32px);text-align:center;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:var(--radius-pill);font-weight:700;font-size:14px;z-index:60}
-.info{padding:32px;max-width:62ch}
+.info{padding:40px 32px;max-width:62ch}
 .info h2{margin:0 0 12px;font-size:24px;font-weight:800;letter-spacing:-.02em}
 .info p,.info li{color:var(--fg);font-weight:400;line-height:1.65}
 .info dt{font-weight:700;margin-top:14px}
@@ -156,9 +156,9 @@ pre.code{margin:0;background:var(--tile);border-radius:8px;padding:12px;font:400
 <body>
 <header>
   <div class="wrap bar">
-    <a class="logo" href="#" id="home-link" aria-label="Monoline 홈">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M8 16V9l4 4 4-4v7"/></svg>
-      <span>monoline</span>
+    <a class="logo" href="#" id="home-link" aria-label="iconPark 홈">
+      <svg viewBox="0 0 22 25" fill="currentColor" stroke="currentColor" stroke-width=".8" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M21 17.7921C21 18.2202 20.7811 18.6146 20.4289 18.8211C18.6567 19.8651 13.2678 23.0353 11.5389 24.0515C11.3933 24.1385 11.2322 24.1884 11.0689 24.1976C10.8611 24.2116 10.65 24.164 10.4611 24.0515C8.73222 23.0353 3.34333 19.8651 1.57222 18.8211C1.21889 18.6146 1 18.2202 1 17.7921L1 7.40899C1 6.98095 1.21889 6.58655 1.57222 6.38007C3.34333 5.33723 8.73222 2.16464 10.4611 1.14848C10.6289 1.04988 10.8144 1 11 1C11.1856 1 11.3711 1.04988 11.5389 1.14848C13.2678 2.16464 18.6567 5.33723 20.4289 6.38007C20.7811 6.58655 21 6.98095 21 7.40899V17.7921ZM19.3333 7.73263L11 2.82816L2.66667 7.73263L2.66667 17.4685L11 22.3718L19.3333 17.4685V7.73263Z"/><path d="M12.0854 11.6187C11.3285 11.421 10.8373 11.2232 10.55 11.0132C10.4079 10.9081 10.3152 10.8031 10.2596 10.6919C10.2009 10.5806 10.1761 10.4602 10.1761 10.3119C10.1761 10.0246 10.2935 9.79903 10.5345 9.61985C10.7755 9.44375 11.1586 9.32635 11.6683 9.32635C12.4345 9.32635 13.2068 9.55188 13.8278 9.91025C13.8711 9.93496 13.9236 9.94114 13.9699 9.92261C14.0163 9.90716 14.0533 9.87009 14.075 9.82375L14.6681 8.37791C14.699 8.30067 14.6681 8.21108 14.6002 8.16783C13.9143 7.7384 12.9628 7.37076 11.4366 7.37076C10.3399 7.37076 9.42233 7.64881 8.77356 8.17092C8.1217 8.69303 7.75097 9.4592 7.75406 10.3798C7.75406 11.2109 7.96105 11.8844 8.4121 12.4034C8.86624 12.9193 9.54282 13.2684 10.4573 13.5094C11.2821 13.7257 11.7579 13.9141 11.9958 14.1057C12.1163 14.2014 12.1812 14.2941 12.2244 14.4022C12.2677 14.5104 12.2831 14.6463 12.2831 14.8162C12.2831 15.1777 12.1657 15.4186 11.9433 15.5917C11.7178 15.7647 11.3532 15.8697 10.8435 15.8697C10.0433 15.8697 9.16282 15.6967 8.19275 15.2147C8.1495 15.1931 8.10007 15.19 8.05682 15.2086C8.01356 15.224 7.97649 15.258 7.95796 15.3012L7.32463 16.7749C7.29065 16.8521 7.31845 16.9448 7.3926 16.9881C8.37194 17.5905 9.7807 17.8809 10.8991 17.8809C12.0978 17.8809 13.0586 17.5843 13.7259 17.0251C14.3932 16.466 14.7485 15.6473 14.7485 14.6648C14.7485 13.9728 14.6249 13.3395 14.214 12.8143C13.8062 12.2891 13.1327 11.8936 12.0854 11.6187Z"/></svg>
+      <span>iconPark</span>
     </a>
     <form class="search" id="search-form" role="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
@@ -174,12 +174,12 @@ pre.code{margin:0;background:var(--tile);border-radius:8px;padding:12px;font:400
 
 <main>
   <section class="wrap hero">
-    <h1 id="headline"></h1>
-    <p>새로 나온 아이콘이 궁금하다면? <button id="whatsnew">업데이트 보기</button></p>
+    <h1 id="headline" hidden></h1>
+    <p hidden>새로 나온 아이콘이 궁금하다면? <button id="whatsnew">업데이트 보기</button></p>
   </section>
 
   <div class="wrap">
-    <aside class="sponsor" aria-label="스폰서 자리 (예시)">
+    <aside class="sponsor" aria-label="스폰서 자리 (예시)" hidden>
       <div class="ph">Sponsor<br>130×100</div>
       <div><b>여기는 스폰서 광고 자리입니다. 원본 사이트처럼 Carbon 같은 광고 네트워크 스크립트를 넣는 위치예요.</b><small>예시 · ads via your network</small></div>
     </aside>
