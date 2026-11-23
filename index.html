@@ -12,7 +12,7 @@
 <style>
 /* Layout: sticky search bar → centred headline → sponsor slot → filter row → dense icon grid → pager → footer */
 :root{
-  /* tokens mirror the Figma "monoline" collection: color/* = --*, radius/md|lg|pill = --radius-*, Overlay/Dim style = --overlay */
+  /* tokens mirror the Figma "iconPark" collection: color/* = --*, radius/md|lg|pill = --radius-*, Overlay/Dim style = --overlay */
   --bg:#ffffff; --fg:#0b0b0c; --muted:#6b6d73; --line:#e6e6e8; --tile:#f5f5f6; --tile-hover:#ececee;
   --accent:#0b0b0c; --on-accent:#ffffff; --fav:#e0245e; --overlay:rgba(10,10,12,.45);
   --font:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
@@ -330,8 +330,10 @@ const title=v=>v.base.n.replace(/-/g,' ').replace(/\b\w/g,m=>m.toUpperCase())+' 
 const PER=24;
 const st={q:'',coll:'all',style:'all',page:1,favOnly:false};
 let favs=new Set();
-try{favs=new Set(JSON.parse(localStorage.getItem('monoline-favs')||'[]'))}catch(e){}
-const saveFavs=()=>{try{localStorage.setItem('monoline-favs',JSON.stringify([...favs]))}catch(e){}};
+/* favourites key was 'monoline-favs' before the iconPark rename: read it once and move it over */
+try{const raw=localStorage.getItem('iconpark-favs')??localStorage.getItem('monoline-favs');favs=new Set(JSON.parse(raw||'[]'))}catch(e){}
+const saveFavs=()=>{try{localStorage.setItem('iconpark-favs',JSON.stringify([...favs]));localStorage.removeItem('monoline-favs')}catch(e){}};
+try{if(localStorage.getItem('monoline-favs')!==null)saveFavs()}catch(e){}
 
 const $=s=>document.querySelector(s);
 const grid=$('#grid'),pager=$('#pager'),statusEl=$('#status');
@@ -466,12 +468,12 @@ $('#d-dl').onclick=async()=>{
   btn.disabled=true;
   try{
     if(fmt==='svg'){
-      saveBlob(new Blob([svgFor(v,color)],{type:'image/svg+xml'}),`monoline-${v.id}.svg`);
-      toast(`monoline-${v.id}.svg 저장을 시작했습니다`);
+      saveBlob(new Blob([svgFor(v,color)],{type:'image/svg+xml'}),`iconpark-${v.id}.svg`);
+      toast(`iconpark-${v.id}.svg 저장을 시작했습니다`);
     }else{
       const size=+$('#d-size').value;
-      saveBlob(await toPng(v,color,size),`monoline-${v.id}-${size}.png`);
-      toast(`monoline-${v.id}-${size}.png 저장을 시작했습니다`);
+      saveBlob(await toPng(v,color,size),`iconpark-${v.id}-${size}.png`);
+      toast(`iconpark-${v.id}-${size}.png 저장을 시작했습니다`);
     }
   }catch(e){toast('파일을 만들지 못했습니다. 다시 눌러 주세요')}
   finally{btn.disabled=false}
@@ -490,7 +492,7 @@ dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});
 
 /* ---------- info dialogs ---------- */
 const INFO={
-  about:`<h2>소개</h2><p>monoline은 24×24 그리드와 2px 스트로크 규칙으로 그린 단순한 아이콘 모음입니다. 아이콘마다 라인과 채움 두 가지 스타일이 있고, SVG 코드나 원하는 크기의 PNG로 가져갈 수 있습니다.</p>`,
+  about:`<h2>소개</h2><p>iconPark은 24×24 그리드와 2px 스트로크 규칙으로 그린 단순한 아이콘 모음입니다. 아이콘마다 라인과 채움 두 가지 스타일이 있고, SVG 코드나 원하는 크기의 PNG로 가져갈 수 있습니다.</p>`,
   qa:`<h2>Q&amp;A</h2><dl><dt>출처 표기가 필요한가요?</dt><dd>아니요. 표기 없이 써도 됩니다.</dd><dt>색을 바꿀 수 있나요?</dt><dd>상세 창의 색상에서 바꾸거나, SVG의 stroke·fill 값을 직접 수정하세요.</dd><dt>즐겨찾기는 어디에 저장되나요?</dt><dd>지금 쓰는 브라우저에만 저장됩니다. 다른 기기와는 공유되지 않습니다.</dd></dl>`,
   license:`<h2>라이선스</h2><p>개인·상업 프로젝트에 무료로 쓸 수 있고 출처 표기는 필요 없습니다.</p><ul><li>웹사이트, 앱, 인쇄물, 영상 등 어디에든 쓸 수 있습니다.</li><li>아이콘을 그대로 묶어 아이콘 팩으로 다시 팔거나 배포할 수는 없습니다.</li><li>아이콘을 상표나 로고의 핵심 요소로 등록할 수 없습니다.</li></ul>`,
   privacy:`<h2>개인정보</h2><p>이 페이지는 계정이나 쿠키를 쓰지 않습니다. 즐겨찾기 목록만 브라우저 저장소(localStorage)에 보관하며 서버로 보내지 않습니다.</p>`
