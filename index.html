@@ -6,6 +6,7 @@
 <meta name="description" content="24×24 그리드로 그린 무료 라인·채움 아이콘 모음">
 <title>iconPark</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<script>try{const t=localStorage.getItem('iconpark-theme');if(t==='light'||t==='dark'){document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
@@ -72,6 +73,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:va
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius-pill);padding:3px}
 .seg button{height:28px;padding:0 12px;border-radius:var(--radius-pill);font-size:14px}
 .seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.seg.theme{flex:none}
 .status{color:var(--muted);font-size:14px;padding-block:4px 12px}
 
 /* grid */
@@ -169,6 +171,10 @@ pre.code{margin:0;background:var(--tile);border-radius:var(--radius-md);padding:
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20s-7-4.4-9-8.6C1.6 8.4 3.6 5 7 5c2 0 3.3 1.1 5 3 1.7-1.9 3-3 5-3 3.4 0 5.4 3.4 4 6.4-2 4.2-9 8.6-9 8.6z"/></svg>
       <span class="lbl-t">즐겨찾기</span><span class="count" id="fav-count">0</span>
     </button>
+    <div class="seg theme" id="theme" role="group" aria-label="화면 테마">
+      <button data-t="light" aria-pressed="false">Light</button>
+      <button data-t="dark" aria-pressed="false">Dark</button>
+    </div>
   </div>
 </header>
 
@@ -336,6 +342,15 @@ const saveFavs=()=>{try{localStorage.setItem('iconpark-favs',JSON.stringify([...
 try{if(localStorage.getItem('monoline-favs')!==null)saveFavs()}catch(e){}
 
 const $=s=>document.querySelector(s);
+
+/* ---------- theme switch (Light / Dark) ---------- */
+const mq=matchMedia('(prefers-color-scheme: dark)');
+const curTheme=()=>document.documentElement.dataset.theme||(mq.matches?'dark':'light');
+function syncTheme(){$('#theme').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===curTheme()))}
+$('#theme').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  const t=b.dataset.t,root=document.documentElement;root.dataset.theme=t;root.style.colorScheme=t;
+  try{localStorage.setItem('iconpark-theme',t)}catch(err){}syncTheme()});
+mq.addEventListener('change',syncTheme);syncTheme();
 const grid=$('#grid'),pager=$('#pager'),statusEl=$('#status');
 
 $('#headline').innerHTML=`<span>${ALL.length}개 이상의 무료 아이콘, ${COLL_COUNT}개 </span><button id="coll-link">컬렉션</button>`;

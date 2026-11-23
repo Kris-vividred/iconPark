@@ -8,6 +8,6 @@ iconmonstr.com 홈페이지 구조를 참고해 만든 아이콘 라이브러리
 - 아이콘 39종 × 라인/채움 = 78개, 6개 컬렉션
 - 검색 자동완성, 컬렉션·스타일 필터, 페이지네이션
 - 상세 창: SVG/PNG 전환, 색상·PNG 크기 선택, SVG·PNG 파일 다운로드, SVG·Base64 코드 복사, 즐겨찾기(localStorage `iconpark-favs`, 예전 키 `monoline-favs`는 자동으로 옮김)
-- 라이트/다크 모드
+- 라이트/다크 모드: 헤더의 Light/Dark 전환 버튼, 선택은 localStorage `iconpark-theme`에 저장 (선택 전에는 기기 설정을 따름)
 
 GitHub Pages로 `main` 브랜치 루트를 배포합니다. `main`에 푸시하면 1분 안팎으로 사이트에 반영됩니다.
