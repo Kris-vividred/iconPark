@@ -132,7 +132,8 @@ pre.code{margin:0;background:var(--tile);border-radius:8px;padding:12px;font:400
 .license button{text-decoration:underline}
 .close{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:var(--radius-pill);display:grid;place-items:center;z-index:2;background:var(--bg)}
 .close svg{width:20px;height:20px}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:var(--radius-pill);font-weight:700;font-size:14px;z-index:60}
+/* toast is a manual popover so it joins the top layer above an open modal <dialog> and its backdrop */
+.toast{position:fixed;inset:auto;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));margin:0;border:0;overflow:visible;width:max-content;max-width:calc(100vw - 32px);text-align:center;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:var(--radius-pill);font-weight:700;font-size:14px;z-index:60}
 .info{padding:32px;max-width:62ch}
 .info h2{margin:0 0 12px;font-size:24px;font-weight:800;letter-spacing:-.02em}
 .info p,.info li{color:var(--fg);font-weight:400;line-height:1.65}
@@ -243,7 +244,7 @@ pre.code{margin:0;background:var(--tile);border-radius:8px;padding:12px;font:400
 
 <dialog id="info" aria-label="안내"><button class="close" id="i-close" aria-label="닫기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="info" id="info-body"></div></dialog>
 
-<div class="toast" id="toast" role="status" hidden></div>
+<div class="toast" id="toast" role="status" popover="manual" hidden></div>
 
 <script>
 (()=>{
@@ -499,7 +500,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-info]');if
 $('#i-close').onclick=()=>info.close();
 info.addEventListener('click',e=>{if(e.target===info)info.close()});
 
-let tt;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,1800)}
+let tt;function toast(m){
+  const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tt);
+  if(t.showPopover){try{t.hidePopover()}catch(e){}t.showPopover()} // re-show so it sits above the latest dialog
+  else{(document.querySelector('dialog[open]')||document.body).append(t)} // fallback: render inside the open dialog
+  tt=setTimeout(()=>{if(t.hidePopover)try{t.hidePopover()}catch(e){}t.hidden=true},1800);
+}
 
 render();
 })();
