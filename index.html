@@ -105,7 +105,9 @@ dialog::backdrop{background:var(--overlay)}
 .dlg>*{min-width:0}
 .preview{background:var(--tile);display:grid;place-items:center;padding:40px;border-radius:16px 0 0 16px;position:relative}
 .preview svg{width:min(200px,60%);height:auto;aspect-ratio:1}
-.preview img{width:min(200px,60%);height:auto;image-rendering:auto}
+.preview img{width:min(200px,60%);height:auto;image-rendering:auto;border-radius:8px;
+  /* transparency checkerboard so any icon colour stays visible in both themes */
+  background:conic-gradient(#e4e4e7 25%,#fafafa 0 50%,#e4e4e7 0 75%,#fafafa 0) 0 0/16px 16px}
 .preview .px{position:absolute;bottom:12px;left:0;right:0;text-align:center;font:400 12px var(--mono);color:var(--muted)}
 .side{padding:28px;display:flex;flex-direction:column;gap:18px}
 .side h2{margin:0;font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
@@ -226,12 +228,13 @@ pre.code{margin:0;background:var(--tile);border-radius:8px;padding:12px;font:400
         <label class="lbl">색상 <input type="color" id="d-color" value="#000000"></label>
       </div>
       <div class="row">
-        <button class="btn primary" id="d-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg><span>SVG 복사</span></button>
+        <button class="btn primary" id="d-dl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>SVG 다운로드</span></button>
+        <button class="btn ghost" id="d-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg><span>SVG 복사</span></button>
         <button class="btn ghost" id="d-b64">Base64</button>
         <button class="btn ghost fav" id="d-fav" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7-4.4-9-8.6C1.6 8.4 3.6 5 7 5c2 0 3.3 1.1 5 3 1.7-1.9 3-3 5-3 3.4 0 5.4 3.4 4 6.4-2 4.2-9 8.6-9 8.6z"/></svg>즐겨찾기</button>
       </div>
       <pre class="code" id="d-code"></pre>
-      <p class="license">PNG는 미리보기 이미지를 길게 누르거나 우클릭해 저장하세요. <button data-info="license">라이선스</button>에 따라 무료로 쓸 수 있습니다.</p>
+      <p class="license">선택한 색상과 크기 그대로 내려받습니다. <button data-info="license">라이선스</button>에 따라 무료로 쓸 수 있습니다.</p>
     </div>
   </div>
 </dialog>
@@ -429,6 +432,7 @@ function updateDetail(){
   if(fmt==='svg'){
     prev.innerHTML=svgFor(v,color==='#000000'?'currentColor':color)+`<div class="px">24 × 24 · SVG</div>`;
     $('#d-copy span').textContent='SVG 복사';$('#d-b64').hidden=false;
+    $('#d-dl span').textContent='SVG 다운로드';
     $('#d-code').textContent=mode==='b64'?`<img src="data:image/svg+xml;base64,${btoa(svg)}" alt="${v.base.n}">`:svg;
   }else{
     const size=+$('#d-size').value;
@@ -441,8 +445,34 @@ function updateDetail(){
     };
     img.src='data:image/svg+xml;base64,'+btoa(svgFor(v,color,size));
     $('#d-copy span').textContent='PNG 데이터 복사';$('#d-b64').hidden=true;
+    $('#d-dl span').textContent=`PNG ${size}px 다운로드`;
   }
 }
+const toPng=(v,color,size)=>new Promise((res,rej)=>{
+  const img=new Image();
+  img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=size;c.getContext('2d').drawImage(img,0,0,size,size);c.toBlob(b=>b?res(b):rej(new Error('png')),'image/png')};
+  img.onerror=rej;img.src='data:image/svg+xml;base64,'+btoa(svgFor(v,color,size));
+});
+function saveBlob(blob,name){
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=name;document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+$('#d-dl').onclick=async()=>{
+  const v=cur,color=colorVal(),btn=$('#d-dl');
+  btn.disabled=true;
+  try{
+    if(fmt==='svg'){
+      saveBlob(new Blob([svgFor(v,color)],{type:'image/svg+xml'}),`monoline-${v.id}.svg`);
+      toast(`monoline-${v.id}.svg 저장을 시작했습니다`);
+    }else{
+      const size=+$('#d-size').value;
+      saveBlob(await toPng(v,color,size),`monoline-${v.id}-${size}.png`);
+      toast(`monoline-${v.id}-${size}.png 저장을 시작했습니다`);
+    }
+  }catch(e){toast('파일을 만들지 못했습니다. 다시 눌러 주세요')}
+  finally{btn.disabled=false}
+};
 $('#d-fmt').addEventListener('click',e=>{const b=e.target.closest('button');if(b){fmt=b.dataset.f;updateDetail()}});
 $('#d-size').onchange=updateDetail;$('#d-color').oninput=updateDetail;
 $('#d-b64').onclick=()=>{mode=mode==='b64'?'svg':'b64';$('#d-b64').textContent=mode==='b64'?'인라인':'Base64';updateDetail()};
