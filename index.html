@@ -139,6 +139,30 @@ pre.code{margin:0;background:var(--tile);border-radius:var(--radius-md);padding:
 .close svg{width:20px;height:20px}
 /* toast is a manual popover so it joins the top layer above an open modal <dialog> and its backdrop */
 .toast{position:fixed;inset:auto;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));margin:0;border:0;overflow:visible;width:max-content;max-width:calc(100vw - 32px);text-align:center;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:var(--radius-pill);font-weight:700;font-size:14px;z-index:60}
+/* animation: grid hover playback + viewer (format tab "애니메이션") */
+.cell svg.ic,.preview svg,.tile svg{overflow:visible}
+.preview .stage{display:grid;place-items:center;width:min(200px,60%);aspect-ratio:1;border-radius:8px}
+.preview .stage svg{width:100%}
+.preview .stage.bg{padding:12%}
+.preview:has(.abar){align-content:center;gap:20px}
+.side:has(#d-anim:not([hidden])){gap:22px}
+.abar{width:min(260px,90%);display:flex;align-items:center;gap:10px;font:400 12px var(--mono);color:var(--muted)}
+.abar button{flex:none;width:28px;height:28px;border-radius:var(--radius-pill);display:grid;place-items:center;color:var(--fg)}
+.abar button:hover{background:var(--tile-hover)}
+.abar button svg{width:16px;height:16px}
+input[type=range]{flex:1;min-width:0;accent-color:var(--fg)}
+.anim{display:flex;flex-direction:column;gap:12px}
+.anim .hd{font-size:13px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px 8px;border:1px solid var(--line);border-radius:var(--radius-md);font-size:13px;line-height:1.2}
+.tile:hover{background:var(--tile)}
+.tile svg{width:32px;height:32px}
+.tile small{color:var(--muted);font-size:11px}
+.tile[aria-pressed="true"]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.adv summary{cursor:pointer;font-size:13px;color:var(--muted);width:max-content}
+.adv .opts{display:grid;grid-template-columns:auto 1fr 64px;gap:8px 10px;align-items:center;margin-top:10px;font-size:13px;color:var(--muted)}
+.adv .opts select{grid-column:2/4}
+input[type=number]{font:inherit;font-size:14px;height:30px;width:64px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);padding:0 6px}
 .info{padding:40px 32px;max-width:62ch}
 .info h2{margin:0 0 12px;font-size:24px;font-weight:800;letter-spacing:-.02em}
 .info p,.info li{color:var(--fg);font-weight:400;line-height:1.65}
@@ -236,11 +260,29 @@ pre.code{margin:0;background:var(--tile);border-radius:var(--radius-md);padding:
         <div class="seg" id="d-fmt">
           <button data-f="svg" aria-pressed="true">SVG</button>
           <button data-f="png" aria-pressed="false">PNG</button>
+          <button data-f="anim" aria-pressed="false">애니메이션</button>
         </div>
+        <label class="lbl" id="d-afmt-wrap" hidden>내보내기
+          <select id="d-afmt"><option value="asvg">애니메이션 SVG</option><option value="gif">GIF</option><option value="video">동영상</option></select>
+        </label>
         <label class="lbl" id="d-size-wrap" hidden>크기
           <select id="d-size"><option>64</option><option>128</option><option selected>256</option><option>512</option></select>
         </label>
         <label class="lbl">색상 <input type="color" id="d-color" value="#000000"></label>
+      </div>
+      <div class="anim" id="d-anim" hidden>
+        <div class="hd">애니메이션</div>
+        <div class="tiles" id="d-tiles"></div>
+        <details class="adv">
+          <summary>고급 설정</summary>
+          <div class="opts">
+            <span>재생 방식</span>
+            <select id="a-mode"><option value="loop">반복</option><option value="once">한 번</option><option value="bounce">왕복</option></select>
+            <span>지연</span><input type="range" id="a-delay" min="0" max="3" step="0.1" value="1"><input type="number" id="a-delay-n" min="0" max="3" step="0.1" value="1" aria-label="지연(초)">
+            <span>속도</span><input type="range" id="a-speed" min="0.25" max="3" step="0.25" value="1"><input type="number" id="a-speed-n" min="0.25" max="3" step="0.25" value="1" aria-label="속도(배)">
+          </div>
+        </details>
+        <label class="lbl">배경 <input type="checkbox" id="a-bg-on"> <input type="color" id="a-bg" value="#ffffff" disabled> <span id="a-bg-t">투명</span></label>
       </div>
       <div class="row">
         <button class="btn primary" id="d-dl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>SVG 다운로드</span></button>
@@ -338,9 +380,115 @@ const svgFor=(v,color='currentColor',size=24)=>{
 const ago=d=>d<1?'오늘':d<30?`${d}일 전`:d<365?`${Math.floor(d/30)}개월 전`:`${Math.floor(d/365)}년 전`;
 const title=v=>v.base.n.replace(/-/g,' ').replace(/\b\w/g,m=>m.toUpperCase())+' – '+(v.style==='lined'?'Lined':'Filled');
 
+/* ---------- animation engine ----------
+   one frame function (progress p 0→1) drives everything: grid hover, viewer preview + timeline,
+   animated-SVG export (sampled into CSS keyframes), GIF and video export (rendered frame by frame) */
+const ANIMS={
+  reveal:{ko:'그리기',dur:1.2},  // lined: stroke draws on · filled: circular wipe from the centre
+  pinch:{ko:'눌림',dur:.8},     // squeeze then spring back
+  select:{ko:'흔들기',dur:1}     // wiggle with a small lift
+};
+const easeIO=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const keys=(k,p)=>{for(let i=1;i<k.length;i++)if(p<=k[i][0]){const[a,va]=k[i-1],[b,vb]=k[i];return va+(vb-va)*easeIO((p-a)/(b-a||1))}return k[k.length-1][1]};
+function frameParams(type,p){
+  p=Math.min(1,Math.max(0,p));
+  if(type==='reveal')return{draw:easeIO(Math.min(1,p/.85)),s:keys([[0,1],[.85,1],[.93,1.06],[1,1]],p),r:0};
+  if(type==='pinch')return{draw:1,s:keys([[0,1],[.3,.8],[.6,1.1],[.8,.96],[1,1]],p),r:0};
+  return{draw:1,s:keys([[0,1],[.15,1.08],[.75,1.04],[1,1]],p),r:keys([[0,0],[.15,-10],[.35,9],[.55,-6],[.75,3],[1,0]],p)};
+}
+let uidN=0;
+/* static SVG of one frame (same markup/attributes as svgFor, plus the frame's transform / draw state) */
+function svgFrame(v,color,size,type,p,uid='ipc'+(++uidN)){
+  const lined=v.style==='lined',{draw,s,r}=frameParams(type,p);
+  let body=(lined?v.base.L:v.base.F).replaceAll('currentColor',color),defs='';
+  if(draw<1){
+    if(lined)body=`<g stroke-dasharray="1 2" stroke-dashoffset="${(1-draw).toFixed(4)}"${draw<.01?' opacity="0"':''}>${body.replace(/<(path|circle|rect)\b/g,'<$1 pathLength="1"')}</g>`;
+    else{defs=`<defs><clipPath id="${uid}"><circle cx="12" cy="12" r="${(17*draw).toFixed(3)}"/></clipPath></defs>`;body=`<g clip-path="url(#${uid})">${body}</g>`}
+  }
+  if(s!==1||r!==0)body=`<g transform="rotate(${r.toFixed(2)} 12 12) translate(12 12) scale(${s.toFixed(4)}) translate(-12 -12)">${body}</g>`;
+  const attrs=lined?`fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`:`fill="${color}"`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" ${attrs}>${defs}${body}</svg>`;
+}
+/* where in the animation (0→1) we are after `el` seconds, for a playback mode; done=true when a "once" play has ended */
+function phase(el,o){
+  const d=ANIMS[o.type].dur/o.speed,c=d+o.delay;
+  if(o.mode==='once')return{p:Math.min(el/d,1),done:el>=d};
+  const k=Math.floor(el/c),loc=Math.min((el-k*c)/d,1);
+  return{p:o.mode==='bounce'&&k%2?1-loc:loc,done:false};
+}
+/* self-playing SVG: frames sampled into CSS keyframes (linear between samples, easing already baked in) */
+function animatedSvg(v,color,o){
+  const lined=v.style==='lined',type=o.type,d=ANIMS[type].dur/o.speed;
+  const hold=o.mode==='once'?0:o.delay,total=d+hold,N=30,fr=[];
+  for(let i=0;i<=N;i++)fr.push([(i/N)*(d/total)*100,frameParams(type,i/N)]);
+  if(hold)fr.push([100,frameParams(type,1)]);
+  const kf=(name,fn)=>`@keyframes ${name}{${fr.map(([pc,f])=>`${+pc.toFixed(2)}%{${fn(f)}}`).join('')}}`;
+  const run=n=>`animation:${n} ${+total.toFixed(3)}s linear ${o.mode==='once'?'1 forwards':o.mode==='bounce'?'infinite alternate':'infinite'}`;
+  let css=`.ip-t{transform-origin:12px 12px;transform-box:view-box;${run('ip-t')}}`+kf('ip-t',f=>`transform:rotate(${f.r.toFixed(2)}deg) scale(${f.s.toFixed(4)})`);
+  let inner=(lined?v.base.L:v.base.F).replaceAll('currentColor',color),defs='';
+  if(type==='reveal'){
+    if(lined){css+=`.ip-d{${run('ip-d')}}`+kf('ip-d',f=>`stroke-dashoffset:${(1-f.draw).toFixed(4)}`);
+      inner=`<g class="ip-d" stroke-dasharray="1 2">${inner.replace(/<(path|circle|rect)\b/g,'<$1 pathLength="1"')}</g>`}
+    else{css+=`.ip-c{transform-origin:12px 12px;transform-box:view-box;${run('ip-c')}}`+kf('ip-c',f=>`transform:scale(${f.draw.toFixed(4)})`);
+      defs=`<defs><clipPath id="ip-clip"><circle class="ip-c" cx="12" cy="12" r="17"/></clipPath></defs>`;inner=`<g clip-path="url(#ip-clip)">${inner}</g>`}
+  }
+  const attrs=lined?`fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`:`fill="${color}"`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" ${attrs}><style>${css}</style>${defs}<g class="ip-t">${inner}</g></svg>`;
+}
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
+/* play an animation once inside `host` (replacing its <svg>), e.g. on grid hover or an animation tile */
+const playing=new WeakMap();
+function playOnce(host,v,type,speed,cls){
+  if(reduceMotion.matches)return;
+  const o={type,speed,delay:0,mode:'once'},t0=performance.now(),id={};playing.set(host,id);
+  const step=now=>{if(playing.get(host)!==id)return;
+    const{p,done}=phase((now-t0)/1000,o);
+    host.querySelector('svg.'+cls).outerHTML=svgFrame(v,'currentColor',24,type,p).replace('<svg ',`<svg class="${cls}" aria-hidden="true" `);
+    if(!done)requestAnimationFrame(step)};
+  requestAnimationFrame(step);
+}
+
+/* ---------- minimal GIF89a encoder (palette + LZW), so no external library is needed ---------- */
+function gifEncode(frames,w,h,palette,delayCs,transparent,loop){
+  const out=[],b=(...a)=>out.push(...a),u16=n=>b(n&255,n>>8&255);
+  const bits=Math.max(1,Math.ceil(Math.log2(palette.length)));
+  b(...'GIF89a'.split('').map(c=>c.charCodeAt(0)));u16(w);u16(h);b(0xF0|(bits-1),0,0);
+  for(let i=0;i<1<<bits;i++){const c=palette[i]||[0,0,0];b(c[0],c[1],c[2])}
+  if(loop)b(0x21,0xFF,0x0B,...'NETSCAPE2.0'.split('').map(c=>c.charCodeAt(0)),3,1,0,0,0);
+  const min=Math.max(2,bits);
+  frames.forEach((px,fi)=>{
+    b(0x21,0xF9,4,(2<<2)|(transparent!=null?1:0));u16(Array.isArray(delayCs)?delayCs[fi]:delayCs);b(transparent??0,0);
+    b(0x2C);u16(0);u16(0);u16(w);u16(h);b(0);b(min);
+    const clear=1<<min,eoi=clear+1,data=[];let size=min+1,next=eoi+1,dict=new Map(),acc=0,n=0;
+    const emit=c=>{acc|=c<<n;n+=size;while(n>=8){data.push(acc&255);acc>>=8;n-=8}};
+    emit(clear);let cur=px[0];
+    for(let i=1;i<px.length;i++){const k=px[i],key=cur<<8|k,hit=dict.get(key);
+      if(hit!==undefined){cur=hit;continue}
+      emit(cur);
+      if(next===4096){emit(clear);dict=new Map();next=eoi+1;size=min+1}
+      else{if(next>=1<<size)size++;dict.set(key,next++)}
+      cur=k}
+    emit(cur);emit(eoi);if(n>0)data.push(acc&255);
+    for(let i=0;i<data.length;i+=255){const ch=data.slice(i,i+255);b(ch.length,...ch)}
+    b(0);
+  });
+  b(0x3B);return new Blob([new Uint8Array(out)],{type:'image/gif'});
+}
+const hexRgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const loadImg=src=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src});
+/* progress values of every frame for one cycle at `fps` (+ how long the last frame holds for the loop delay) */
+function cycleFrames(o,fps){
+  const d=ANIMS[o.type].dur/o.speed,n=Math.max(2,Math.round(d*fps)),ps=[];
+  for(let i=0;i<=n;i++)ps.push(i/n);
+  let seq=[...ps];if(o.mode==='bounce')seq=[...ps,...ps.slice(0,-1).reverse()];
+  return{seq,hold:o.mode==='once'?0:o.delay};
+}
+
 /* ---------- state ---------- */
 const PER=24;
 const st={q:'',coll:'all',style:'all',page:1,favOnly:false};
+/* animation settings shared by the viewer and grid hover (hover plays the type/speed picked in the viewer) */
+const anim={type:'reveal',mode:'loop',delay:1,speed:1,bg:null,playing:true,el:0,raf:0,last:0};
 let favs=new Set();
 /* favourites key was 'monoline-favs' before the iconPark rename: read it once and move it over */
 try{const raw=localStorage.getItem('iconpark-favs')??localStorage.getItem('monoline-favs');favs=new Set(JSON.parse(raw||'[]'))}catch(e){}
@@ -406,6 +554,7 @@ function render(){
     const li=document.createElement('li');
     li.innerHTML=`<button class="cell" aria-label="${title(v)} 열기">${favs.has(v.id)?`<svg class="heart" viewBox="0 0 24 24" fill="currentColor"><path d="${HEART}"/></svg>`:''}${svgFor(v).replace('<svg ','<svg class="ic" aria-hidden="true" ')}<span class="meta"><b>${v.base.n}</b>${ago(v.days)}</span></button>`;
     li.firstChild.onclick=()=>openIcon(v);
+    li.firstChild.addEventListener('pointerenter',()=>playOnce(li.firstChild,v,anim.type,anim.speed,'ic'));
     grid.append(li);
   });
   // pager
@@ -447,7 +596,7 @@ $('#search-form').addEventListener('submit',e=>{e.preventDefault();sug.hidden=tr
 /* ---------- detail dialog ---------- */
 const dlg=$('#dlg');let cur=null,fmt='svg',mode='svg';
 function openIcon(v){
-  cur=v;fmt='svg';mode='svg';
+  cur=v;fmt='svg';mode='svg';anim.el=0;anim.playing=!reduceMotion.matches;
   $('#d-name').textContent=title(v);
   $('#d-sub').textContent=`${COLL[v.base.c]} 컬렉션 · ${v.date.toISOString().slice(0,10)} 공개 · ${v.base.ko}`;
   $('#d-tags').innerHTML=v.base.t.map(t=>`<button>${t}</button>`).join('');
@@ -458,7 +607,10 @@ function colorVal(){return $('#d-color').value}
 function updateDetail(){
   const v=cur,color=colorVal();
   $('#d-fmt').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===fmt));
-  $('#d-size-wrap').hidden=fmt!=='png';
+  const af=$('#d-afmt').value;
+  $('#d-size-wrap').hidden=!(fmt==='png'||(fmt==='anim'&&af!=='asvg'));
+  $('#d-afmt-wrap').hidden=fmt!=='anim';$('#d-anim').hidden=fmt!=='anim';
+  if(fmt!=='anim')cancelAnimationFrame(anim.raf);
   const fav=favs.has(v.id);$('#d-fav').setAttribute('aria-pressed',fav);
   $('#d-fav').lastChild.textContent=fav?'즐겨찾기됨':'즐겨찾기';
   $('#d-fav svg').setAttribute('fill',fav?'currentColor':'none');
@@ -469,6 +621,8 @@ function updateDetail(){
     $('#d-copy span').textContent='SVG 복사';$('#d-b64').hidden=false;
     $('#d-dl span').textContent='SVG 다운로드';
     $('#d-code').textContent=mode==='b64'?`<img src="data:image/svg+xml;base64,${btoa(svg)}" alt="${v.base.n}">`:svg;
+  }else if(fmt==='anim'){
+    animDetail(v,color,af);
   }else{
     const size=+$('#d-size').value;
     const img=new Image();img.onload=()=>{
@@ -482,6 +636,91 @@ function updateDetail(){
     $('#d-copy span').textContent='PNG 데이터 복사';$('#d-b64').hidden=true;
     $('#d-dl span').textContent=`PNG ${size}px 다운로드`;
   }
+}
+/* ---------- animation viewer: stage + timeline, animation tiles, advanced settings ---------- */
+const ICO_PLAY='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>';
+const ICO_PAUSE='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+/* black on the default tile background follows the theme (like the SVG tab); a set background uses the real colour */
+const stageColor=c=>c==='#000000'&&!anim.bg?'currentColor':c;
+function animDetail(v,color,af){
+  const size=+$('#d-size').value;
+  $('#d-preview').innerHTML=`<div class="stage${anim.bg?' bg':''}" id="a-stage"${anim.bg?` style="background:${anim.bg}"`:''}></div>`+
+    `<div class="abar"><button id="a-play" type="button"></button><input type="range" id="a-scrub" min="0" max="1" step="0.001" value="0" aria-label="재생 위치"><span>${(ANIMS[anim.type].dur/anim.speed).toFixed(1)}s</span></div>`;
+  $('#a-play').onclick=()=>{
+    if(!anim.playing&&anim.mode==='once'&&phase(anim.el,anim).done)anim.el=0;
+    anim.playing=!anim.playing;startAnim()};
+  $('#a-scrub').oninput=e=>{anim.playing=false;anim.el=+e.target.value*ANIMS[anim.type].dur/anim.speed;startAnim()};
+  $('#d-tiles').innerHTML=Object.entries(ANIMS).map(([k,a])=>`<button class="tile" type="button" data-a="${k}" aria-pressed="${k===anim.type}">${svgFrame(v,'currentColor',24,k,1).replace('<svg ','<svg class="tic" aria-hidden="true" ')}${a.ko}<small>${k}</small></button>`).join('');
+  $('#d-tiles').querySelectorAll('.tile').forEach(t=>{
+    t.addEventListener('pointerenter',()=>playOnce(t,v,t.dataset.a,anim.speed,'tic'));
+    t.onclick=()=>{anim.type=t.dataset.a;anim.el=0;anim.playing=true;updateDetail()}});
+  $('#d-copy span').textContent='SVG 복사';$('#d-b64').hidden=true;
+  $('#d-dl span').textContent=af==='asvg'?'SVG 다운로드':af==='gif'?`GIF ${size}px 다운로드`:`동영상 ${size}px 다운로드`;
+  $('#d-code').textContent=animatedSvg(v,color,anim);
+  startAnim();
+}
+function drawAnim(){
+  const stg=$('#a-stage');if(!stg||fmt!=='anim')return;
+  const{p}=phase(anim.el,anim);
+  stg.innerHTML=svgFrame(cur,stageColor(colorVal()),24,anim.type,p);
+  $('#a-scrub').value=p;
+}
+function syncPlay(){const b=$('#a-play');if(!b)return;b.innerHTML=anim.playing?ICO_PAUSE:ICO_PLAY;b.setAttribute('aria-label',anim.playing?'일시정지':'재생')}
+function tick(now){
+  if(!anim.playing)return;
+  anim.el+=(now-anim.last)/1000;anim.last=now;
+  if(phase(anim.el,anim).done){anim.playing=false;syncPlay()}
+  drawAnim();if(anim.playing)anim.raf=requestAnimationFrame(tick);
+}
+function startAnim(){
+  cancelAnimationFrame(anim.raf);drawAnim();syncPlay();
+  if(anim.playing){anim.last=performance.now();anim.raf=requestAnimationFrame(tick)}
+}
+const restart=()=>{anim.el=0;anim.playing=true;updateDetail()};
+$('#d-afmt').onchange=updateDetail;
+$('#a-mode').onchange=e=>{anim.mode=e.target.value;restart()};
+[['delay',v=>anim.delay=v],['speed',v=>anim.speed=v]].forEach(([k,set])=>{
+  const r=$('#a-'+k),n=$('#a-'+k+'-n');
+  const apply=val=>{val=Math.min(+r.max,Math.max(+r.min,+val||+r.min));r.value=n.value=val;set(val);restart()};
+  r.oninput=()=>apply(r.value);n.onchange=()=>apply(n.value);
+});
+$('#a-bg-on').onchange=e=>{$('#a-bg').disabled=!e.target.checked;$('#a-bg-t').hidden=e.target.checked;anim.bg=e.target.checked?$('#a-bg').value:null;updateDetail()};
+$('#a-bg').oninput=e=>{anim.bg=e.target.value;updateDetail()};
+dlg.addEventListener('close',()=>cancelAnimationFrame(anim.raf));
+
+/* GIF: 25 fps; transparent background = 1-bit alpha, solid background = 32 blended shades */
+async function exportGif(v,color,size){
+  const fps=25,{seq,hold}=cycleFrames(anim,fps),fg=hexRgb(color),bg=anim.bg?hexRgb(anim.bg):null;
+  const pal=bg?Array.from({length:32},(_,i)=>bg.map((b,j)=>Math.round(b+(fg[j]-b)*i/31))):[fg,fg];
+  const c=document.createElement('canvas');c.width=c.height=size;const ctx=c.getContext('2d',{willReadFrequently:true});
+  const frames=[];
+  for(const p of seq){
+    const img=await loadImg('data:image/svg+xml;base64,'+btoa(svgFrame(v,color,size,anim.type,p)));
+    ctx.clearRect(0,0,size,size);ctx.drawImage(img,0,0,size,size);
+    const a=ctx.getImageData(0,0,size,size).data,idx=new Uint8Array(size*size);
+    for(let i=0;i<idx.length;i++){const al=a[i*4+3];idx[i]=bg?Math.round(al/255*31):al>=128?1:0}
+    frames.push(idx);
+  }
+  const delays=frames.map(()=>100/fps),h=Math.round(hold*100);
+  if(h){delays[delays.length-1]+=h;if(anim.mode==='bounce')delays[(seq.length-1)/2]+=h}
+  return gifEncode(frames,size,size,pal,delays.map(Math.round),bg?null:0,anim.mode!=='once');
+}
+/* video: frames drawn in real time onto a canvas and recorded (MP4 where the browser supports it, otherwise WebM) */
+async function exportVideo(v,color,size){
+  const mime=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm'].find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported(m));
+  if(!mime||!HTMLCanvasElement.prototype.captureStream)throw new Error('unsupported');
+  const fps=30,{seq,hold}=cycleFrames(anim,fps),bg=anim.bg||'#ffffff';
+  const imgs=await Promise.all(seq.map(p=>loadImg('data:image/svg+xml;base64,'+btoa(svgFrame(v,color,size,anim.type,p)))));
+  const list=[...imgs];for(let i=0;i<Math.round(hold*fps);i++)list.push(imgs[imgs.length-1]);
+  const c=document.createElement('canvas');c.width=c.height=size;const ctx=c.getContext('2d');
+  const draw=img=>{ctx.fillStyle=bg;ctx.fillRect(0,0,size,size);ctx.drawImage(img,0,0,size,size)};
+  draw(list[0]);
+  const rec=new MediaRecorder(c.captureStream(fps),{mimeType:mime,videoBitsPerSecond:4e6}),chunks=[];
+  rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+  const stopped=new Promise(r=>rec.onstop=r);rec.start();
+  for(const img of list){draw(img);await new Promise(r=>setTimeout(r,1000/fps))}
+  await new Promise(r=>setTimeout(r,120));rec.stop();await stopped;
+  return{blob:new Blob(chunks,{type:mime.split(';')[0]}),ext:mime.includes('mp4')?'mp4':'webm'};
 }
 const toPng=(v,color,size)=>new Promise((res,rej)=>{
   const img=new Image();
@@ -500,20 +739,26 @@ $('#d-dl').onclick=async()=>{
     if(fmt==='svg'){
       saveBlob(new Blob([svgFor(v,color)],{type:'image/svg+xml'}),`iconpark-${v.id}.svg`);
       toast(`iconpark-${v.id}.svg 저장을 시작했습니다`);
+    }else if(fmt==='anim'){
+      const af=$('#d-afmt').value,size=+$('#d-size').value,base=`iconpark-${v.id}-${anim.type}`;let name;
+      if(af==='asvg'){name=`${base}.svg`;saveBlob(new Blob([animatedSvg(v,color,anim)],{type:'image/svg+xml'}),name)}
+      else if(af==='gif'){toast('GIF를 만드는 중입니다…');name=`${base}-${size}.gif`;saveBlob(await exportGif(v,color,size),name)}
+      else{toast('동영상을 녹화하는 중입니다…');const r=await exportVideo(v,color,size);name=`${base}-${size}.${r.ext}`;saveBlob(r.blob,name)}
+      toast(`${name} 저장을 시작했습니다`);
     }else{
       const size=+$('#d-size').value;
       saveBlob(await toPng(v,color,size),`iconpark-${v.id}-${size}.png`);
       toast(`iconpark-${v.id}-${size}.png 저장을 시작했습니다`);
     }
-  }catch(e){toast('파일을 만들지 못했습니다. 다시 눌러 주세요')}
+  }catch(e){toast(e.message==='unsupported'?'이 브라우저는 동영상 내보내기를 지원하지 않습니다':'파일을 만들지 못했습니다. 다시 눌러 주세요')}
   finally{btn.disabled=false}
 };
 $('#d-fmt').addEventListener('click',e=>{const b=e.target.closest('button');if(b){fmt=b.dataset.f;updateDetail()}});
 $('#d-size').onchange=updateDetail;$('#d-color').oninput=updateDetail;
 $('#d-b64').onclick=()=>{mode=mode==='b64'?'svg':'b64';$('#d-b64').textContent=mode==='b64'?'인라인':'Base64';updateDetail()};
 $('#d-copy').onclick=async()=>{
-  const text=fmt==='svg'?$('#d-code').textContent:cur._png;
-  try{await navigator.clipboard.writeText(text);toast(fmt==='svg'?(mode==='b64'?'Base64 코드를 복사했습니다':'SVG 코드를 복사했습니다'):'PNG 데이터 URL을 복사했습니다')}
+  const text=fmt==='png'?cur._png:$('#d-code').textContent;
+  try{await navigator.clipboard.writeText(text);toast(fmt==='anim'?'애니메이션 SVG 코드를 복사했습니다':fmt==='svg'?(mode==='b64'?'Base64 코드를 복사했습니다':'SVG 코드를 복사했습니다'):'PNG 데이터 URL을 복사했습니다')}
   catch(e){const r=document.createRange();r.selectNodeContents($('#d-code'));const s=getSelection();s.removeAllRanges();s.addRange(r);toast('코드를 선택했습니다. ⌘C로 복사하세요')}
 };
 $('#d-fav').onclick=()=>{favs.has(cur.id)?favs.delete(cur.id):favs.add(cur.id);saveFavs();updateDetail();render();toast(favs.has(cur.id)?'즐겨찾기에 추가했습니다':'즐겨찾기에서 뺐습니다')};
