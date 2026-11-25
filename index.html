@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <!-- CSP: inline scripts run only if their hash is listed. After editing either inline script block, run: python3 tools/update-csp.py -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gBdU/6xlXoetCKuyr3MZdi8trrWvZSg/jgOAPS88KBM=' 'sha256-AsYoxo1mbrfm+9nvaHqUDZySLg+g48Fcw8pEvGliYVo='; style-src 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gBdU/6xlXoetCKuyr3MZdi8trrWvZSg/jgOAPS88KBM=' 'sha256-dKOz5Ic1hKEisLPbWU2EX/Fop2k5y202V34aDZibFQU='; style-src 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="24×24 그리드로 그린 무료 라인·채움 아이콘 모음">
@@ -624,7 +624,8 @@ function cycleFrames(o,fps){
 }
 
 /* ---------- state ---------- */
-const PER=24;
+/* a page is always 4 full rows: icons per page = columns the grid currently fits × ROWS */
+const ROWS=4;
 const st={q:'',coll:'all',style:'all',page:1,favOnly:false};
 /* animation settings shared by the viewer and grid hover (hover plays the type/speed picked in the viewer) */
 const anim={type:'reveal',mode:'loop',delay:1,speed:1,bg:null,playing:true,el:0,raf:0,last:0};
@@ -677,11 +678,21 @@ function filtered(){
   return ALL.filter(v=>(st.coll==='all'||v.base.c===st.coll)&&(st.style==='all'||v.style===st.style)&&match(v,st.q)&&(!st.favOnly||favs.has(v.id)));
 }
 
+/* column count comes from the CSS grid itself (auto-fill), so it always matches what is on screen */
+const perPage=()=>Math.max(1,getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length)*ROWS;
+let lastPer=0,resizeRaf=0;
+/* when the window resize changes the column count, stay on the page that holds the first icon being shown */
+addEventListener('resize',()=>{cancelAnimationFrame(resizeRaf);resizeRaf=requestAnimationFrame(()=>{
+  const per=perPage();if(per===lastPer)return;
+  st.page=Math.floor((st.page-1)*lastPer/per)+1;render();
+})});
+
 function render(){
   chips.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===st.coll&&!st.favOnly));
   $('#seg').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===st.style));
   $('#fav-btn').setAttribute('aria-pressed',st.favOnly);
   $('#fav-count').textContent=favs.size;
+  const PER=perPage();lastPer=PER;
   const list=filtered();const pages=Math.max(1,Math.ceil(list.length/PER));st.page=Math.min(st.page,pages);
   const slice=list.slice((st.page-1)*PER,st.page*PER);
   const parts=[];if(st.favOnly)parts.push('즐겨찾기');if(st.coll!=='all')parts.push(COLL[st.coll]);if(st.q)parts.push(`“${st.q}”`);
