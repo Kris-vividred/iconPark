@@ -14,7 +14,7 @@ iconmonstr.com 홈페이지 구조를 참고해 만든 아이콘 라이브러리
   - 기본 세트: 39종 × 라인/채움 = 78개 (24×24, 2px 스트로크)
   - Mono 세트: 71종 130개 (Figma `Icons/Mono` 프레임에서 가져와 32→24 그리드로 변환, id는 `mono-` 접두사). 일부는 한 가지 스타일만 있음 (nav_*, player_*, blank, loading)
   - Color 세트: 41종 (Figma `Icons/Color` 프레임, 48×48 원래 색·그라데이션 그대로 반으로 줄여 24 그리드에 그림, id는 `color-` 접두사). 색상 선택은 적용되지 않음
-  - Mono·Color 세트 이름은 FS Library Hub(https://library-hub-rosy.vercel.app) 아이콘 에셋 규칙(`assets/icons/<분류>/<lowerCamelCase>.svg`)을 따름. 대응표는 `tools/fs-names.json`(hub = 허브에 같은 아이콘이 있어 그 이름 그대로, rule = 허브에 없어 규칙대로 지음). 채움 변형은 `Fill`, 허브가 짝을 정한 아이콘은 그 접미사(`likeOff`/`likeOn`, `bookmarkOff`/`bookmarkOn`, `nav/menuDefault`/`nav/menuSelected`). 다운로드 파일 이름도 이 이름을 씀. 예전 Figma 이름(`course_fullcolor` 등)은 검색 태그로 남겨 두었고, 즐겨찾기 id는 예전 이름 그대로라 저장된 즐겨찾기는 유지됨
+  - 모든 아이콘(기본·Mono·Color) 이름은 FS Library Hub(https://library-hub-rosy.vercel.app) 아이콘 에셋 규칙(`assets/icons/<분류>/<lowerCamelCase>.svg`)을 따름. 대응표는 `tools/fs-names.json`(basic·mono·color, hub = 허브에 같은 아이콘이 있어 그 이름 그대로, rule = 허브에 없어 규칙대로 지음). 채움 변형은 `Fill`, 허브가 짝을 정한 아이콘은 그 접미사(`likeOff`/`likeOn`, `bookmarkOff`/`bookmarkOn`, `nav/menuDefault`/`nav/menuSelected`). 다운로드 파일 이름도 이 이름을 씀. 예전 이름(`trash-can`, `course_fullcolor` 등)은 검색 태그로 남겨 두었고, 즐겨찾기 id는 예전 이름 그대로라 저장된 즐겨찾기는 유지됨
 - 검색 자동완성, 컬렉션·스타일 필터, 페이지네이션(한 페이지 = 화면 폭에 맞는 열 수 × 4줄, 창 크기가 바뀌면 다시 계산)
 - 상세 창: SVG/PNG 전환, 색상·PNG 크기 선택, SVG·PNG 파일 다운로드, SVG·Base64 코드 복사, 즐겨찾기(localStorage `iconpark-favs`, 예전 키 `monoline-favs`는 자동으로 옮김)
 - 애니메이션: 목록에서 아이콘에 마우스를 올리면 한 번 재생. 상세 창 `애니메이션` 탭에서 재생/일시정지·타임라인, 애니메이션 3종(그리기 reveal·눌림 pinch·흔들기 select), 고급 설정(재생 방식 반복/한 번/왕복·지연·속도), 배경색, 애니메이션 SVG(CSS 내장)·GIF·동영상(MP4, 미지원 브라우저는 WebM) 내보내기. 외부 라이브러리 없이 GIF 인코더 내장
