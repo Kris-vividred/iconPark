@@ -243,7 +243,7 @@ input[type=number]{font:inherit;font-size:14px;height:30px;width:64px;border:1px
     <nav>
       <button data-info="about">소개</button>
       <button data-info="qa">Q&amp;A</button>
-      <button data-info="license">라이선스</button>
+      <button data-info="license" hidden>라이선스</button><!-- license hidden for now: remove `hidden` to show it again -->
       <button data-info="privacy">개인정보</button>
     </nav>
     <small>© 2026 iconPark · 24×24 그리드, 2px 스트로크</small>
@@ -295,7 +295,7 @@ input[type=number]{font:inherit;font-size:14px;height:30px;width:64px;border:1px
         <button class="btn ghost fav" id="d-fav" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7-4.4-9-8.6C1.6 8.4 3.6 5 7 5c2 0 3.3 1.1 5 3 1.7-1.9 3-3 5-3 3.4 0 5.4 3.4 4 6.4-2 4.2-9 8.6-9 8.6z"/></svg>즐겨찾기</button>
       </div>
       <pre class="code" id="d-code"></pre>
-      <p class="license">선택한 색상과 크기 그대로 내려받습니다. <button data-info="license">라이선스</button>에 따라 무료로 쓸 수 있습니다.</p>
+      <p class="license">선택한 색상과 크기 그대로 내려받습니다.<span hidden> <button data-info="license">라이선스</button>에 따라 무료로 쓸 수 있습니다.</span></p>
     </div>
   </div>
 </dialog>
