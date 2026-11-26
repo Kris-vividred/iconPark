@@ -1,5 +1,5 @@
 {
- "_about": "Figma export name -> FS Library Hub asset path (assets/icons/<path>.svg). 'hub' = same drawing exists in the hub under this exact name; 'rule' = no hub asset, named by the hub's convention (lowerCamelCase, category folder, appbar/venue/row names repeat the folder). 'pair' = hub suffixes for the lined/filled pair (default: '' / 'Fill'). 'basic' = the original iconPark set (2px stroke, 24 grid).",
+ "_about": "Figma export name -> FS Library Hub asset path (assets/icons/<path>.svg). 'hub' = same drawing exists in the hub under this exact name; 'rule' = no hub asset, named by the hub's convention (lowerCamelCase, category folder, appbar/venue/row names repeat the folder). 'pair' = hub suffixes for the lined/filled pair (default: '' / 'Fill'). 'basic' = the original iconPark set (2px stroke, 24 grid). 'q' = Figma [Q][CLIENT] UI Test icon/* components (Figma name -> q/<lowerCamelCase>).",
  "color": {
   "course_fullcolor": [
    "main/courseColor",
@@ -620,6 +620,404 @@
   "refresh": [
    "refresh",
    "rule"
+  ]
+ },
+ "q": {
+  "home": [
+   "q/home",
+   "rule"
+  ],
+  "addUser": [
+   "q/addUser",
+   "rule"
+  ],
+  "user": [
+   "q/user",
+   "rule"
+  ],
+  "logoutUser": [
+   "q/logoutUser",
+   "rule"
+  ],
+  "settings": [
+   "q/settings",
+   "rule"
+  ],
+  "menu": [
+   "q/menu",
+   "rule"
+  ],
+  "DirectionBack": [
+   "q/directionBack",
+   "rule"
+  ],
+  "DirectionNext": [
+   "q/directionNext",
+   "rule"
+  ],
+  "exit": [
+   "q/exit",
+   "rule"
+  ],
+  "lock": [
+   "q/lock",
+   "rule"
+  ],
+  "tee": [
+   "q/tee",
+   "rule"
+  ],
+  "key": [
+   "q/key",
+   "rule"
+  ],
+  "aiming": [
+   "q/aiming",
+   "rule"
+  ],
+  "notice": [
+   "q/notice",
+   "rule"
+  ],
+  "nextTurn": [
+   "q/nextTurn",
+   "rule"
+  ],
+  "line": [
+   "q/line",
+   "rule"
+  ],
+  "circle": [
+   "q/circle",
+   "rule"
+  ],
+  "square": [
+   "q/square",
+   "rule"
+  ],
+  "erase": [
+   "q/erase",
+   "rule"
+  ],
+  "trash": [
+   "q/trash",
+   "rule"
+  ],
+  "fullscreen": [
+   "q/fullscreen",
+   "rule"
+  ],
+  "next": [
+   "q/next",
+   "rule"
+  ],
+  "pause": [
+   "q/pause",
+   "rule"
+  ],
+  "play": [
+   "q/play",
+   "rule"
+  ],
+  "prev": [
+   "q/prev",
+   "rule"
+  ],
+  "refresh": [
+   "q/refresh",
+   "rule"
+  ],
+  "live": [
+   "q/live",
+   "rule"
+  ],
+  "wind": [
+   "q/wind",
+   "rule"
+  ],
+  "mat": [
+   "q/mat",
+   "rule"
+  ],
+  "flag": [
+   "q/flag",
+   "rule"
+  ],
+  "random": [
+   "q/random",
+   "rule"
+  ],
+  "bell": [
+   "q/bell",
+   "rule"
+  ],
+  "volumeOn": [
+   "q/volumeOn",
+   "rule"
+  ],
+  "volumeOff": [
+   "q/volumeOff",
+   "rule"
+  ],
+  "mulligan": [
+   "q/mulligan",
+   "rule"
+  ],
+  "turnOff": [
+   "q/turnOff",
+   "rule"
+  ],
+  "caddie": [
+   "q/caddie",
+   "rule"
+  ],
+  "disconnected": [
+   "q/disconnected",
+   "rule"
+  ],
+  "download": [
+   "q/download",
+   "rule"
+  ],
+  "search": [
+   "q/search",
+   "rule"
+  ],
+  "upload": [
+   "q/upload",
+   "rule"
+  ],
+  "driver": [
+   "q/driver",
+   "rule"
+  ],
+  "wood": [
+   "q/wood",
+   "rule"
+  ],
+  "iron": [
+   "q/iron",
+   "rule"
+  ],
+  "putter": [
+   "q/putter",
+   "rule"
+  ],
+  "reverse": [
+   "q/reverse",
+   "rule"
+  ],
+  "menuExpend": [
+   "q/menuExpend",
+   "rule"
+  ],
+  "rewind": [
+   "q/rewind",
+   "rule"
+  ],
+  "rotate": [
+   "q/rotate",
+   "rule"
+  ],
+  "terran": [
+   "q/terran",
+   "rule"
+  ],
+  "terran_color": [
+   "q/terranColor",
+   "rule"
+  ],
+  "holeout": [
+   "q/holeout",
+   "rule"
+  ],
+  "link": [
+   "q/link",
+   "rule"
+  ],
+  "areaMenu": [
+   "q/areaMenu",
+   "rule"
+  ],
+  "optionList": [
+   "q/optionList",
+   "rule"
+  ],
+  "close": [
+   "q/close",
+   "rule"
+  ],
+  "plus": [
+   "q/plus",
+   "rule"
+  ],
+  "minus": [
+   "q/minus",
+   "rule"
+  ],
+  "position": [
+   "q/position",
+   "rule"
+  ],
+  "directionRight": [
+   "q/directionRight",
+   "rule"
+  ],
+  "directionDown": [
+   "q/directionDown",
+   "rule"
+  ],
+  "directionLeft": [
+   "q/directionLeft",
+   "rule"
+  ],
+  "directionUp": [
+   "q/directionUp",
+   "rule"
+  ],
+  "directionEnded": [
+   "q/directionEnded",
+   "rule"
+  ],
+  "directionEndedR": [
+   "q/directionEndedR",
+   "rule"
+  ],
+  "Qicon": [
+   "q/qIcon",
+   "rule"
+  ],
+  "Qlogo": [
+   "q/qLogo",
+   "rule"
+  ],
+  "Local": [
+   "q/local",
+   "rule"
+  ],
+  "warning": [
+   "q/warning",
+   "rule"
+  ],
+  "golfBall": [
+   "q/golfBall",
+   "rule"
+  ],
+  "trajectory": [
+   "q/trajectory",
+   "rule"
+  ],
+  "mic": [
+   "q/mic",
+   "rule"
+  ],
+  "FlagDynamic": [
+   "q/flagDynamic",
+   "rule"
+  ],
+  "medal": [
+   "q/medal",
+   "rule"
+  ],
+  "upDown": [
+   "q/upDown",
+   "rule"
+  ],
+  "leftRight": [
+   "q/leftRight",
+   "rule"
+  ],
+  "show": [
+   "q/show",
+   "rule"
+  ],
+  "hide": [
+   "q/hide",
+   "rule"
+  ],
+  "favorite": [
+   "q/favorite",
+   "rule"
+  ],
+  "crown": [
+   "q/crown",
+   "rule"
+  ],
+  "return": [
+   "q/return",
+   "rule"
+  ],
+  "settingLock": [
+   "q/settingLock",
+   "rule"
+  ],
+  "check": [
+   "q/check",
+   "rule"
+  ],
+  "warningScreenOnly": [
+   "q/warningScreenOnly",
+   "rule"
+  ],
+  "Minimize": [
+   "q/minimize",
+   "rule"
+  ],
+  "TeamACE": [
+   "q/teamAce",
+   "rule"
+  ],
+  "TeamBIRDIE": [
+   "q/teamBirdie",
+   "rule"
+  ],
+  "TeamEAGLE": [
+   "q/teamEagle",
+   "rule"
+  ],
+  "Edit": [
+   "q/edit",
+   "rule"
+  ],
+  "Longgame": [
+   "q/longGame",
+   "rule"
+  ],
+  "Shortgame": [
+   "q/shortGame",
+   "rule"
+  ],
+  "Putting": [
+   "q/putting",
+   "rule"
+  ],
+  "ClubTest": [
+   "q/clubTest",
+   "rule"
+  ],
+  "Stats": [
+   "q/stats",
+   "rule"
+  ],
+  "FlagRuler": [
+   "q/flagRuler",
+   "rule"
+  ],
+  "heart": [
+   "q/heart",
+   "rule",
+   [
+    "Line",
+    "Shape"
+   ]
+  ],
+  "star": [
+   "q/star",
+   "rule",
+   [
+    "Line",
+    ""
+   ]
   ]
  }
 }
