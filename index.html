@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <!-- CSP: inline scripts run only if their hash is listed. After editing either inline script block, run: python3 tools/update-csp.py -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gBdU/6xlXoetCKuyr3MZdi8trrWvZSg/jgOAPS88KBM=' 'sha256-bViLKrOH88ueedFR2I4S32oYTGG+oNA6Cv/Z3Kdj+8A='; style-src 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gBdU/6xlXoetCKuyr3MZdi8trrWvZSg/jgOAPS88KBM=' 'sha256-/TjZy6Nl6qJXmXrAXIg0BmTeLywNEXXDHw8vXv4a3gk='; style-src 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="24×24 그리드로 그린 무료 라인·채움 아이콘 모음">
@@ -486,25 +486,17 @@ const COLORED=[
 ];
 const COLL={interface:'인터페이스',arrows:'화살표',communication:'커뮤니케이션',media:'미디어',commerce:'커머스',golf:'골프',brand:'브랜드',weather:'날씨',navigation:'내비게이션'};
 
-/* expand into lined + filled variants with example release dates (newest first) */
-const NOW=new Date('2026-11-19');
+/* expand into variants. Every icon has the same release date for now (YYYY-MM-DD, local time);
+   the list shows its age against the viewer's real today ("오늘", "3일 전" …) */
+const RELEASE='2026-11-26';
 const ALL=[];
-/* newest first: Color set, then Mono, then the original set; prefixed ids keep repeated names apart */
-COLORED.forEach((ic,i)=>{const days=Math.floor(i/7);
-  ALL.push({id:`color-${ic.o}`,base:ic,style:'color',days,date:new Date(NOW-days*864e5)});
-});
-MONO.forEach((ic,i)=>{
-  [['lined',ic.L],['filled',ic.F]].forEach(([s,has],j)=>{if(!has)return;
-    const days=Math.floor(i/8)+j+7;
-    ALL.push({id:`mono-${ic.o}-${s}`,base:ic,style:s,days,date:new Date(NOW-days*864e5)});
-  });
-});
-ICONS.forEach((ic,i)=>{
-  ['lined','filled'].forEach((s,j)=>{
-    const days=Math.floor(i*19.3+j*2)+19;
-    ALL.push({id:`${ic.o}-${s}`,base:ic,style:s,days,date:new Date(NOW-days*864e5)});
-  });
-});
+/* list order: Color set, then Mono, then the original set; prefixed ids keep repeated names apart */
+COLORED.forEach(ic=>ALL.push({id:`color-${ic.o}`,base:ic,style:'color',date:RELEASE}));
+MONO.forEach(ic=>[['lined',ic.L],['filled',ic.F]].forEach(([s,has])=>{if(has)ALL.push({id:`mono-${ic.o}-${s}`,base:ic,style:s,date:RELEASE})}));
+ICONS.forEach(ic=>['lined','filled'].forEach(s=>ALL.push({id:`${ic.o}-${s}`,base:ic,style:s,date:RELEASE})));
+/* whole days from a YYYY-MM-DD date to the viewer's today (local calendar days, never negative) */
+const daysSince=ymd=>{const[y,m,d]=ymd.split('-').map(Number),t=new Date();
+  return Math.max(0,Math.round((new Date(t.getFullYear(),t.getMonth(),t.getDate())-new Date(y,m-1,d))/864e5))};
 const BASES=[...COLORED,...MONO,...ICONS];
 const COLL_COUNT=new Set(BASES.map(i=>i.c)).size;
 /* root <svg> paint: the original set inherits stroke/fill from the root; Mono shapes set their own */
@@ -711,7 +703,7 @@ function render(){
   }
   slice.forEach(v=>{
     const li=document.createElement('li');
-    li.innerHTML=`<button class="cell" aria-label="${title(v)} 열기">${favs.has(v.id)?`<svg class="heart" viewBox="0 0 24 24" fill="currentColor"><path d="${HEART}"/></svg>`:''}${svgFor(v).replace('<svg ','<svg class="ic" aria-hidden="true" ')}<span class="meta"><b>${fileBase(v)}</b>${ago(v.days)}</span></button>`;
+    li.innerHTML=`<button class="cell" aria-label="${title(v)} 열기">${favs.has(v.id)?`<svg class="heart" viewBox="0 0 24 24" fill="currentColor"><path d="${HEART}"/></svg>`:''}${svgFor(v).replace('<svg ','<svg class="ic" aria-hidden="true" ')}<span class="meta"><b>${fileBase(v)}</b>${ago(daysSince(v.date))}</span></button>`;
     li.firstChild.onclick=()=>openIcon(v);
     li.firstChild.addEventListener('pointerenter',()=>playOnce(li.firstChild,v,anim.type,anim.speed,'ic'));
     grid.append(li);
@@ -757,7 +749,7 @@ const dlg=$('#dlg');let cur=null,fmt='svg',mode='svg';
 function openIcon(v){
   cur=v;fmt='svg';mode='svg';anim.el=0;anim.playing=!reduceMotion.matches;
   $('#d-name').textContent=title(v);
-  $('#d-sub').textContent=`${COLL[v.base.c]} 컬렉션 · ${v.date.toISOString().slice(0,10)} 공개 · ${v.base.ko}`;
+  $('#d-sub').textContent=`${COLL[v.base.c]} 컬렉션 · ${v.date} 공개 · ${v.base.ko}`;
   $('#d-tags').innerHTML=v.base.t.map(t=>`<button>${t}</button>`).join('');
   $('#d-tags').querySelectorAll('button').forEach(b=>b.onclick=()=>{dlg.close();q.value=b.textContent;q.dispatchEvent(new Event('input'));sug.hidden=true});
   updateDetail();dlg.showModal();
