@@ -623,44 +623,20 @@
   ]
  },
  "q": {
-  "home": [
-   "q/home",
-   "rule"
-  ],
   "addUser": [
    "q/addUser",
-   "rule"
-  ],
-  "user": [
-   "q/user",
    "rule"
   ],
   "logoutUser": [
    "q/logoutUser",
    "rule"
   ],
-  "settings": [
-   "q/settings",
-   "rule"
-  ],
-  "menu": [
-   "q/menu",
-   "rule"
-  ],
   "DirectionBack": [
    "q/directionBack",
    "rule"
   ],
-  "DirectionNext": [
-   "q/directionNext",
-   "rule"
-  ],
   "exit": [
    "q/exit",
-   "rule"
-  ],
-  "lock": [
-   "q/lock",
    "rule"
   ],
   "tee": [
@@ -673,10 +649,6 @@
   ],
   "aiming": [
    "q/aiming",
-   "rule"
-  ],
-  "notice": [
-   "q/notice",
    "rule"
   ],
   "nextTurn": [
@@ -699,10 +671,6 @@
    "q/erase",
    "rule"
   ],
-  "trash": [
-   "q/trash",
-   "rule"
-  ],
   "fullscreen": [
    "q/fullscreen",
    "rule"
@@ -711,20 +679,8 @@
    "q/next",
    "rule"
   ],
-  "pause": [
-   "q/pause",
-   "rule"
-  ],
-  "play": [
-   "q/play",
-   "rule"
-  ],
   "prev": [
    "q/prev",
-   "rule"
-  ],
-  "refresh": [
-   "q/refresh",
    "rule"
   ],
   "live": [
@@ -739,16 +695,8 @@
    "q/mat",
    "rule"
   ],
-  "flag": [
-   "q/flag",
-   "rule"
-  ],
   "random": [
    "q/random",
-   "rule"
-  ],
-  "bell": [
-   "q/bell",
    "rule"
   ],
   "volumeOn": [
@@ -775,14 +723,6 @@
    "q/disconnected",
    "rule"
   ],
-  "download": [
-   "q/download",
-   "rule"
-  ],
-  "search": [
-   "q/search",
-   "rule"
-  ],
   "upload": [
    "q/upload",
    "rule"
@@ -807,10 +747,6 @@
    "q/reverse",
    "rule"
   ],
-  "menuExpend": [
-   "q/menuExpend",
-   "rule"
-  ],
   "rewind": [
    "q/rewind",
    "rule"
@@ -831,10 +767,6 @@
    "q/holeout",
    "rule"
   ],
-  "link": [
-   "q/link",
-   "rule"
-  ],
   "areaMenu": [
    "q/areaMenu",
    "rule"
@@ -843,36 +775,8 @@
    "q/optionList",
    "rule"
   ],
-  "close": [
-   "q/close",
-   "rule"
-  ],
-  "plus": [
-   "q/plus",
-   "rule"
-  ],
   "minus": [
    "q/minus",
-   "rule"
-  ],
-  "position": [
-   "q/position",
-   "rule"
-  ],
-  "directionRight": [
-   "q/directionRight",
-   "rule"
-  ],
-  "directionDown": [
-   "q/directionDown",
-   "rule"
-  ],
-  "directionLeft": [
-   "q/directionLeft",
-   "rule"
-  ],
-  "directionUp": [
-   "q/directionUp",
    "rule"
   ],
   "directionEnded": [
@@ -907,10 +811,6 @@
    "q/trajectory",
    "rule"
   ],
-  "mic": [
-   "q/mic",
-   "rule"
-  ],
   "FlagDynamic": [
    "q/flagDynamic",
    "rule"
@@ -925,10 +825,6 @@
   ],
   "leftRight": [
    "q/leftRight",
-   "rule"
-  ],
-  "show": [
-   "q/show",
    "rule"
   ],
   "hide": [
@@ -951,10 +847,6 @@
    "q/settingLock",
    "rule"
   ],
-  "check": [
-   "q/check",
-   "rule"
-  ],
   "warningScreenOnly": [
    "q/warningScreenOnly",
    "rule"
@@ -973,10 +865,6 @@
   ],
   "TeamEAGLE": [
    "q/teamEagle",
-   "rule"
-  ],
-  "Edit": [
-   "q/edit",
    "rule"
   ],
   "Longgame": [
@@ -1002,22 +890,6 @@
   "FlagRuler": [
    "q/flagRuler",
    "rule"
-  ],
-  "heart": [
-   "q/heart",
-   "rule",
-   [
-    "Line",
-    "Shape"
-   ]
-  ],
-  "star": [
-   "q/star",
-   "rule",
-   [
-    "Line",
-    ""
-   ]
   ]
  }
 }
