@@ -10,9 +10,9 @@ iconmonstr.com 홈페이지 구조를 참고해 만든 아이콘 라이브러리
   - **`index.html`의 `<script>` 내용을 고치면 반드시 `python3 tools/update-csp.py`로 해시를 갱신**해야 합니다(안 하면 스크립트가 실행되지 않음). `--check`로 확인만 할 수 있음
   - Pretendard CSS는 SRI(integrity)로 변조 여부를 확인. Google Fonts CSS는 브라우저마다 내용이 달라 SRI를 걸 수 없음
   - 사용자 입력(검색어)은 이스케이프한 뒤 화면에 넣음
-- 아이콘 348개, 9개 컬렉션, 스타일 필터 라인/채움/컬러
+- 아이콘 343개, 9개 컬렉션, 스타일 필터 라인/채움/컬러
   - 기본 세트: 39종 × 라인/채움 = 78개 (24×24, 2px 스트로크)
-  - Mono 세트: 71종 130개 (Figma `Icons/Mono` 프레임에서 가져와 32→24 그리드로 변환, id는 `mono-` 접두사). 일부는 한 가지 스타일만 있음 (nav_*, player_*, blank, loading)
+  - Mono 세트: 71종 125개 (Figma `Icons/Mono` 프레임에서 가져와 32→24 그리드로 변환, id는 `mono-` 접두사). 일부는 한 가지 스타일만 있음 (nav_*, player_*, blank, loading, 브랜드 심볼 5종 — Figma 원본에서 채움 변형을 지워서 라인만 둠)
   - Color 세트: 41종 (Figma `Icons/Color` 프레임, 48×48 원래 색·그라데이션 그대로 반으로 줄여 24 그리드에 그림, id는 `color-` 접두사). 색상 선택은 적용되지 않음
   - Q 세트: 97종 99개 (Figma `[Q][CLIENT] UI Test`의 `icon/*` 컴포넌트, 88×88 원본 좌표를 그대로 두고 24로 축소해 그림, 단색 `#E6E6E6`은 색상 선택이 적용되게 바꿈, `terranColor`만 원래 색). `heartLine`/`heartShape`, `starLine`/`star`는 라인/채움 짝. 가로로 긴 텍스트 배지 `Mystats`는 제외
   - 추가 규칙: 기존 아이콘과 뜻·모양이 비슷해도 스타일이 다르면 추가함(예: Q의 각진 home·search·heart는 기존 아이콘과 별도로 들어감)
